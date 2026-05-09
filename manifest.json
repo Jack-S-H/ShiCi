@@ -1,0 +1,25 @@
+{
+    "name": "Snatch 抓词",
+    "description": "hello Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "hello.html",
+        "default_icon": "hello_extensions.png"
+    }
+}
+{
+    "content_scripts": [
+        {
+            "js": [
+                "scripts/content.js",
+                "scripts/snatch.js"
+            ],
+            "matches": [
+                "https://developer.chrome.com/docs/extensions/*",
+                "https://developer.chrome.com/docs/webstore/*"
+                "https://*"
+            ]
+        }
+    ]
+}
