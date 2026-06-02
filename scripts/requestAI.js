@@ -34,7 +34,6 @@ export async function requestAI(data,apikey) {
             }),
         });
         if (!response.ok) {
-            // 输出 HTTP 错误状态和原始文本以便调试
             const errorText = await response.text();
             throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
@@ -44,6 +43,6 @@ export async function requestAI(data,apikey) {
     }
     catch (error) {
         console.error('请求失败:', error);
-        throw error; // 重新抛出，让调用者 .catch 处理
+        throw error; 
     }
 }

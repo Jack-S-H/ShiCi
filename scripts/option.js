@@ -91,9 +91,3 @@ document.addEventListener("DOMContentLoaded",async ()=>{
         });
     }
 });
-// function sortTable(){
-//     const allTables = document.querySelectorAll("table");
-//     for (const table of allTables) {
-        
-//     }
-// }

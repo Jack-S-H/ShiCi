@@ -8,7 +8,6 @@ chrome.runtime.onInstalled.addListener(async () => {
     await createDB();
     chrome.runtime.openOptionsPage();
     const result = await chrome.storage.local.get('deletedWords');
-    // const deletedWords=result.
 });
 //定义行为
 const actions={
@@ -19,7 +18,7 @@ const actions={
         // 翻译并保存单词
         console.log('收到翻译请求:', message.text);
         const {"deepseekapikey":DSkey} = await chrome.storage.local.get("deepseekapikey");
-        // console.log("接收方：",message.extradata);
+
         let response=requestAI(message.text, DSkey)
             .then(response=>response.choices[0].message.content)
             .then(JSON.parse);
@@ -37,19 +36,15 @@ const actions={
         });
     },
     delWord:async(message,sendResponse)=>{
-        // 删除单词
-        // console.log('删除单词:', message.text);
         const result=await deletename(Number(message.text));
         sendResponse(result);
     },
     searchWord:async(message,sendResponse)=>{
-        //搜索单词
         const text=await searchKeyword(message.text);
         sendResponse(text);
     },
     searchByName:async(message,sendResponse)=>{
         const text=await searchName(message.text);
-        // console.log("搜索结果：",text);
         sendResponse(text);
     },
     getallWord:async(message,sendResponse)=>{

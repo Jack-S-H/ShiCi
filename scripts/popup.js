@@ -32,7 +32,6 @@ async function doSearch(keyword) {
         .catch(error => console.error('搜索请求失败:', error));
     
     if (results.length > 0) {
-        // console.log('results:', results);
         results.forEach(word => {
             const div = document.createElement('div');
             div.className = 'item';
@@ -41,24 +40,18 @@ async function doSearch(keyword) {
                 <span class="usphone">${escapeHTML(word.usphone)}</span>
                 <span class="translation">${escapeHTML(word.translate)}</span>
             `;
-            // div.addEventListener('click', () => {
-            //     showWordDetail(word);  // 你的详情展示函数
-            //     suggestions.style.display = 'none';
-            // });
             suggestions.appendChild(div);
         });
         suggestions.style.display = 'block';
     }
 }
 
-// 防 XSS
 function escapeHTML(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
 }
 
-// 点击页面其他地方关闭候补
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.searchbox')) {
         suggestions.style.display = 'none';

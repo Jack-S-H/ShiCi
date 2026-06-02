@@ -6,19 +6,15 @@ body {
 }
 .searchbox {
   position: relative;
-  /* 作为浮窗定位的锚点 */
   width: 100%;
   max-width: 400px;
   display: block;
 }
 #suggestions{
   position: absolute;
-  /* 相对于 .search-box 定位 */
   top: 100%;
-  /* 紧贴 input 底部 */
   left: 0;
   width: 100%;
-  /* 和 input 一样宽 */
   background-color: black;
   border-radius: 0 0 6px 6px;
   box-shadow: 0 4px 12px rgb(246, 244, 244);

@@ -1,6 +1,5 @@
 //数据库版本
 const DBversion=2;
-//数据库索引列表
 const indexes = [
     ['name', 'name', true ],
     ['translate', 'translate', false ],
@@ -17,7 +16,6 @@ export function createDB(){
         // 使用 request.error 做些处理！
     };
     request.onupgradeneeded = (event) => {
-        // event.target.transaction.objectStore("words").createIndex("searchname", "searchname", { unique: false });
         db = event.target.result;
         const objectStore = db.objectStoreNames.contains('words')
             ? event.target.transaction.objectStore('words')
@@ -66,29 +64,9 @@ async function openDB() {
             resolve(db);
         }
         request.onupgradeneeded = (event) => {
-            // const objectStore = request.result.createObjectStore("words", { keyPath: "id", autoIncrement: true });
-            // objectStore.createIndex("searchname", "searchname", { unique: false });
             console.warn("数据库不存在，请先调用 createDB");
         }
     });
-    //以下为待生效功能：复用连接
-    // dbInstance=new Promise((resolve, reject)=>{
-    //     const request = indexedDB.open("snatchwords", DBversion);
-
-    //     request.onerror = (event) => {
-    //         console.error("打开数据库失败", request.error);
-    //         reject(request.error);
-    //         // 使用 request.error 做些处理！
-    //     };
-    //     request.onsuccess = (event) => {
-    //         const db = request.result;
-    //         resolve(db);
-    //     }
-    //     request.onupgradeneeded = (event) => {
-    //         console.warn("数据库不存在，请先调用 createDB");
-    //     }
-    // });
-    // return dbInstance;
 }
 export async function insertDB(data) {
     const db=await openDB();
@@ -106,7 +84,6 @@ export async function insertDB(data) {
     const request = objectStore.add(data);
     request.onsuccess = (event) => {
         console.log("写入数据成功！")
-        // event.target.result === customer.ssn;
     };
     request.onerror = (event) => {
         // 单条失败不会中止整个事务，但最好记录日志
@@ -131,22 +108,6 @@ export async function searchName(name) {
     };
     return result;
 }
-// async function getallkeys(key,items) {
-//     const db=await openDB();
-//     const index=db.transaction('words').objectStore('words').index(key);
-//     const result=await new Promise((resolve)=>{
-//         index.openCursor('nextunique').onsuccess=(e)=>{
-//             const cursor =e.target.result;
-//             if(cursor){
-//                 items.push(cursor.key);
-//                 cursor.continue();
-//             }
-//             else{
-//                 resolve(items);
-//             }
-//         };
-//     });
-// }
 export async function getall() {
     const db=await openDB()
     const index=db.transaction('words')
@@ -199,7 +160,6 @@ export async function searchKeyword(keyword) {
             }
         };
     });
-    // console.log(results.length);
     return results;
 }
 export async function deletename(key) {
@@ -210,18 +170,6 @@ export async function deletename(key) {
     const getresult=ostore.get(key);
     const delresult=ostore.delete(key);
 
-    // delresult.onsuccess=(e)=>{
-    //     console.log("删除成功！");
-    // };
-    // delresult.onerror=(e)=>{
-    //     console.log("删除失败：", e.target.error);
-    // };
-    // getresult.onsuccess = (e) => {
-    //     console.log("删除成功！");
-    // };
-    // delresult.onerror = (e) => {
-    //     console.log("删除失败：", e.target.error);
-    // };
     transaction.oncomplete=(e)=>{
         console.log('事务完成');
     };
