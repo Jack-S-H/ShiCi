@@ -1,0 +1,34 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="dark light" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/popup.css" />
+</head>
+<body>
+    <!-- <form> 是表单的容器。但在扩展里，很多时候你不需要真的提交表单（会刷新页面）
+        我记得有一篇文章写了新出的一个属性，提交之后不会刷新页面 -->
+    <button id="openOptions">设置</button>
+    <form>
+        <label for="search" class="searchbox">搜索单词：
+            <input type="text" id="searchinput" placeholder="输入搜索内容" autofocus>
+            <div id="suggestions">
+                <button type="button" id="delwordBtn">删除</button>
+            </div>
+        </label>
+        <label for="saveword" class="savewordbox">录入单词：
+            <input type="text" id="saveword" placeholder="输入要录入的单词">
+            <button type="button" id="savewordBtn">提交</button>
+        </label>
+        
+    </form>
+
+    
+    <script src="../scripts/popup.js" type="module"></script>
+</body>
+
+</html>

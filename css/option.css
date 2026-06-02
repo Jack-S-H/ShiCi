@@ -1,0 +1,48 @@
+:root {
+    --color-primary: hsl(180, 50%, 90%);
+    --color-secondary: hsl(180, 50%, 10%);
+    --color-tertiary: hsl(240, 80%, 20%);
+    --color-accent: hsl(120, 80%, 20%);
+}
+
+.dark {
+    --color-primary: hsl(180, 50%, 10%);
+    --color-secondary: hsl(180, 50%, 90%);
+    --color-tertiary: hsl(240, 80%, 80%);
+    --color-accent: hsl(120, 80%, 80%);
+}
+body{
+    font-size: 1rem;
+    background-color:var(--color-primary)
+}
+label{
+    color: var(--color-secondary);
+}
+#apikey{
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    border-radius: 4px;
+}
+table{
+    border-collapse: collapse;
+}
+th{
+    color: var(--color-secondary);
+}
+td{
+    color:var(--color-accent);
+}
+button{
+    display: inline-block;
+    background:var(--color-tertiary);
+    color: var(--color-primary);
+    border: var(--color-tertiary);
+    border-radius: 4px;
+}
+/* label{
+    display: block;
+} */
+/* #delete{
+    align-items: center;
+} */
