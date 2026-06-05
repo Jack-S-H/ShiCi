@@ -1,6 +1,9 @@
 #  拾词
 
 一本极简且好用的词语笔记本。
+
+从[谷歌商店](https://chromewebstore.google.com/detail/%E6%8B%BE%E8%AF%8D/hoejicmjdnmpicbiaocjepmlidjgpokn?hl=zh-CN)安装
+
 本人为js初学者，欢迎各位的指导。
 
 ---
