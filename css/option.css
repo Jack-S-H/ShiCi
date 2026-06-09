@@ -31,7 +31,7 @@ th{
     color: var(--color-secondary);
 }
 td{
-    color:var(--color-accent);
+    color:var(--color-secondary);
 }
 button{
     display: inline-block;
