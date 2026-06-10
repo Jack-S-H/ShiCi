@@ -1,6 +1,19 @@
+/**
+ *_____ _     _   _____ _  
+/  ___| |   (_) /  __ (_) 
+\ `--.| |__  _  | /  \/_  
+ `--. \ '_ \| | | |   | | 
+/\__/ / | | | | | \__/\ | 
+\____/|_| |_|_|  \____/_| 
+ *
+ * 这个文件实现的功能主要是保存和标记元素
+ * 
+*/
 function saveWord() {
     const selection=window.getSelection();
+    //Selection {anchorNode: text, anchorOffset: 9, focusNode: text, focusOffset: 11, isCollapsed: false, …}
     const selectedText=selection.toString().trim();
+    //简单判断选取的内容是否符合规范
     if (!selectedText) return;
     if (!/[a-zA-Z]/.test(selectedText)) return;
     //选取文字所在的网址
@@ -12,6 +25,8 @@ function saveWord() {
 
     const parentText=range.commonAncestorContainer.textContent.trim();
     const parentElement=range.commonAncestorContainer.parentElement;
+    //更大范围内的文字
+    // const parentText=parentElement.innerText.trim();
 
     if (parentElement.classList.contains('wavy-underline')) {
         return;
@@ -29,9 +44,20 @@ function saveWord() {
         })
         .catch(error => console.error('翻译请求失败:', error));
     markWord(range);
-
 }
-
+/**
+ * 先尝试直接标记节点，再进行跨节点标记
+ * 使用TreeWalker收集所有在范围内的文本节点
+ * 判断元素在该节点的哪些部分
+ * 计算在当前文本节点上的偏移
+ * 如果发现元素全部在该节点内，就直接提取这部分进行标记
+ * 否则需要分割节点：保留范围外的部分，包裹范围内的部分
+ * 先分割出右侧多余部分，再分割左侧多余部分，中间部分即为选区内容
+ * 分割后文本位置可能会改变，所以按end从后向前分较为安全
+ * 
+ * @param {*} range 
+ * @returns 
+ */
 function markWord(range){
     //创建包裹元素
     const span = document.createElement('span');
@@ -40,10 +66,9 @@ function markWord(range){
     span.style.textDecorationColor = '#e74c3c';
     span.classList.add('underline-wavy');
     span.addEventListener('mouseenter', (event) => showcard(event, span));
-    span.addEventListener('mouseleave', hidecard);
-
+    span.addEventListener('mouseleave', (e) => card.style.display = 'none');
     const { startContainer, startOffset, endContainer, endOffset } = range;
-    //尝试处理文字
+
     try {
         range.surroundContents(span);
         console.log('简单选择');
@@ -51,16 +76,17 @@ function markWord(range){
     } catch (e) {
         console.warn('跨元素选择:',e);
     }
-    // 分割文本节点并包裹
+
     const textNodes = [];
     const walker = document.createTreeWalker(
-        range.commonAncestorContainer, 
+        range.commonAncestorContainer,
         NodeFilter.SHOW_TEXT,
         {
             acceptNode: function (node) {
                 if (!range.intersectsNode(node)) {
                     return NodeFilter.FILTER_REJECT;
                 }
+                //跳过空白文本
                 if (node.textContent.trim() === '') {
                     return NodeFilter.FILTER_SKIP;
                 }
@@ -74,33 +100,33 @@ function markWord(range){
         textNodes.push(node);
     }
 
-    // 对每个文本节点进行处理
     textNodes.forEach((textNode) => {
         const nodeRange = document.createRange();
         nodeRange.selectNode(textNode);
 
-        // 计算在当前文本节点上的偏移
         const start = textNode === startContainer ? startOffset : 0;
         const end = textNode === endContainer ? endOffset : textNode.length;
 
         if (start === 0 && end === textNode.length) {
-
             textNode.parentNode.replaceChild(span, textNode);
             span.appendChild(textNode);
             return;
         }
+
         let targetNode = textNode;
 
+        // 先分割出右侧多余部分，结束的尾部，如果结束位置不是末尾
         if (end < textNode.length) {
             targetNode.splitText(end);
         }
 
+        // 分割出左侧多余部分，如果开始位置 > 0，此时 targetNode 变为包含选区内容的部分
         if (start > 0) {
             const leftPart = targetNode.splitText(start);
-            targetNode = leftPart; 
+            targetNode = leftPart;
+            // leftPart 现在包含从 start 到原来 end 的内容
         }
-
-        
+        // 现在 targetNode 正好是选区范围内的文本节点
         targetNode.parentNode.replaceChild(span, targetNode);
         span.appendChild(targetNode);
     });
@@ -109,126 +135,21 @@ function markWord(range){
 document.addEventListener('dblclick',saveWord);
 document.addEventListener('keydown', function (event) {
     if (event.key === 's' || event.key === 'S') {
-        snatchword();
+        saveWord();
     }
 });
-
-
-//鼠标移到划线单词上去显示单词卡片
-
-const card = document.createElement('div');
-card.className = 'snatch-wordcard';
-card.innerHTML = `
-    <div class="word"></div>
-    <div class="usphon"></div>
-    <div class="translation"></div>
-    <div class="suggestion"></div>
-`;
-document.body.appendChild(card);
-document.addEventListener('keydown', function (event) {
-    if (event.key === 'Delete' && event.ctrlKey) {
-        chrome.runtime.sendMessage({
-            action:"delWord",
-            text:card.getAttribute("data-id")
-        })
-            .then(response => {
-                console.log("删除成功：",response);
-
-            })
-            .catch(error => console.error('删除失败:', error));
-    }
-});
-
-async function showcard(event, el) {
-    const keyword = el.textContent.trim().toLowerCase();
-    let word;
-    let translation;
-    let usphon;
-    let suggestion;
-    
-    const result = await searchWordwithRetry(keyword, 30, 1000);
-    
-    if (!result) return;
-
-
-    word = result.name;
-    translation = result.translate;
-    usphon = result.usphone;
-    suggestion = "记忆建议：" + result.suggestion;
-
-    // 填充内容
-    card.querySelector('.word').textContent = word;
-    card.querySelector('.usphon').textContent = usphon;
-    card.querySelector('.translation').textContent = translation;
-    card.querySelector('.suggestion').textContent = suggestion;
-    card.setAttribute("data-id",result.id);
-
-    // 显示弹窗
-    card.style.display = 'block';
-
-    // 定位弹窗：在下划线下方
-    positioncard(event);
-}
-
-function hidecard() {
-    card.style.display = 'none';
-}
-
-//考虑根据元素位置定位而不是鼠标位置？
-function positioncard(event) {
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-
-    
-    let left = mouseX;
-    let top = mouseY + 15;  
-
-    
-    if (left + card.offsetWidth > window.innerWidth) {
-        left = window.innerWidth - card.offsetWidth - 10;
-    }
-
-    
-    if (top + card.offsetHeight > window.innerHeight) {
-        top = mouseY - card.offsetHeight - 10;  
-    }
-
-    card.style.left = left + 'px';
-    card.style.top = top + 'px';
-}
-
-async function searchWordwithRetry(keyword, times, Ms) {
-    try {
-        const response = await chrome.runtime.sendMessage(
-            {
-                action: 'searchByName',
-                text: keyword
-            }
-        );
-        if (!response) throw new error();
-        return response;
-    } catch (error) {
-        if (times <= 1) {
-            
-            return null;
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, Ms));
-        
-        return searchWordwithRetry(keyword, times - 1, Ms);
-    }
-}
 
 if (document.readyState !== 'loading') {
-    
     initmark();
 } else {
-    
     document.addEventListener('DOMContentLoaded', initmark);
 }
 
+/**
+ * 用treeworker遍历，获取数据库key，对照，创建range，调用mark函数
+ * 因为少了range信息，所以目前还无法处理跨元素的单词
+ */
 async function initmark(){
-
     const targetNode = document.getElementsByTagName("body")[0];
     const wordlist=await chrome.runtime.sendMessage({
         action:"getallWord",
@@ -261,7 +182,7 @@ async function initmark(){
                     range.setEnd(Node, startIndex + word.length);
                     ranges.push(range);
                 }
-                startIndex += word.length; 
+                startIndex += word.length;
             }
         }
     }
@@ -269,19 +190,6 @@ async function initmark(){
     for (let i = ranges.length - 1; i >= 0; i--) {
         markWord(ranges[i]);
     }
-    
+
 }
 
-const connectport = chrome.runtime.connect({ name: 'indexedDB-change-pipeline' });
-connectport.onMessage.addListener((msg)=>{
-    if(msg.action==='marksUpdated'){
-        initmark();
-    }
-});
-
-connectport.onDisconnect.addListener(() => {
-    const delay = 1000 + Math.random() * 2000;
-    setTimeout(createMarksPort, delay);
-});
-
-const observerOptions = { subtree: true, childList: true };

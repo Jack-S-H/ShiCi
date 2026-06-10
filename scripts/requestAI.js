@@ -1,4 +1,11 @@
 import { en2zh } from "../prompt/en2zh.js";
+
+/**
+ * 所有调用大模型的函数都定义在这个文件中。
+ * 这里不处理错误，需要在调用时处理
+ * 函数输出：如果成功就输出大模型回复的内容，如果失败就抛出错误
+*/
+
 export async function requestAI(data,apikey) {
     try{
         let response=await fetch("https://api.deepseek.com/chat/completions", {
@@ -43,6 +50,6 @@ export async function requestAI(data,apikey) {
     }
     catch (error) {
         console.error('请求失败:', error);
-        throw error; 
+        throw error;
     }
 }

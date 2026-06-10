@@ -26,11 +26,12 @@
 │   └── options.html          # API Key 配置页面
 ├── scripts/
 │   ├── background.js         # Service Worker 主逻辑
-│   ├── snatch.js             # 内容脚本：划词、波浪线标记
+│   ├── content.js            # 内容脚本：划词、波浪线标记
 │   ├── requestAI.js          # 请求 DeepSeek API 封装
 │   ├── indexedBD.js          # IndexedDB 操作封装
 │   ├── option.js             # 选项页交互逻辑
 │   └── popup.js              # 弹窗搜索交互逻辑
+│   └── card.js               # 实现网页上的单词卡片弹窗
 ├── css/
 │   ├── popup.css
 │   └── option.css

@@ -1,13 +1,14 @@
 
+//打开设置
 document.getElementById('openOptions').addEventListener('click',()=>{
     chrome.runtime.openOptionsPage();
-    
 })
+
+//搜索单词
 let searchTimer = null;
 
 const searchInput = document.getElementById('searchinput');
 const suggestions = document.getElementById('suggestions');
-
 
 searchInput.addEventListener('input', () => {
     clearTimeout(searchTimer);
@@ -40,18 +41,25 @@ async function doSearch(keyword) {
                 <span class="usphone">${escapeHTML(word.usphone)}</span>
                 <span class="translation">${escapeHTML(word.translate)}</span>
             `;
+            //点击单词后显示新页面
+            // div.addEventListener('click', () => {
+            //     showWordDetail(word);
+            //     suggestions.style.display = 'none';
+            // });
             suggestions.appendChild(div);
         });
         suggestions.style.display = 'block';
     }
 }
 
+// 防 XSS
 function escapeHTML(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
 }
 
+// 点击页面其他地方关闭候补
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.searchbox')) {
         suggestions.style.display = 'none';

@@ -1,5 +1,6 @@
 //数据库版本
 const DBversion=2;
+//数据库索引列表
 const indexes = [
     ['name', 'name', true ],
     ['translate', 'translate', false ],
@@ -8,7 +9,10 @@ const indexes = [
     ['suggestion', 'suggestion', false],
 ];
 
-export function createDB(){
+/**
+ * 
+ */
+function createDB(){
     let db;
     const request = indexedDB.open("snatchwords", DBversion);
     request.onerror = (event) => {
@@ -34,13 +38,6 @@ export function createDB(){
                 objectStore.createIndex(indexName, keyPath, { unique: unique });
             }
         }
-        // objectStore.createIndex("name", "name", { unique: true });
-        // objectStore.createIndex("translate", "translate", { unique: false });
-        // objectStore.createIndex("date", "date", { unique: false });
-        // objectStore.createIndex("url", "url", { unique: false });
-        // objectStore.createIndex("context", "context", { unique: false });
-        // objectStore.createIndex("searchname", "searchname", { unique: false });
-        // objectStore.createIndex("ukphone", "ukphone", { unique: false });
         console.log("数据库已创建！")
     }
     request.onsuccess=(event)=>{
@@ -64,7 +61,8 @@ async function openDB() {
             resolve(db);
         }
         request.onupgradeneeded = (event) => {
-            console.warn("数据库不存在，请先调用 createDB");
+            // console.warn("数据库不存在，请先调用 createDB");
+            createDB();
         }
     });
 }
@@ -80,13 +78,13 @@ export async function insertDB(data) {
         console.error("打开事务失败", event.target.error);
         // 别忘了处理错误！
     };
+    // 单条失败不会中止整个事务
     const objectStore = transaction.objectStore("words");
     const request = objectStore.add(data);
     request.onsuccess = (event) => {
         console.log("写入数据成功！")
     };
     request.onerror = (event) => {
-        // 单条失败不会中止整个事务，但最好记录日志
         console.error("插入失败，数据：",data,"原因", event.target.error);
     };
 };
@@ -108,6 +106,22 @@ export async function searchName(name) {
     };
     return result;
 }
+// async function getallkeys(key,items) {
+//     const db=await openDB();
+//     const index=db.transaction('words').objectStore('words').index(key);
+//     const result=await new Promise((resolve)=>{
+//         index.openCursor('nextunique').onsuccess=(e)=>{
+//             const cursor =e.target.result;
+//             if(cursor){
+//                 items.push(cursor.key);
+//                 cursor.continue();
+//             }
+//             else{
+//                 resolve(items);
+//             }
+//         };
+//     });
+// }
 export async function getall() {
     const db=await openDB()
     const index=db.transaction('words')
@@ -127,16 +141,16 @@ export async function getall() {
     return results;
 }
 //废弃！
-async function hasInserted(keyword) {
-    const result=await searchKeyword(keyword);
-    console.log(result);
-    if (result.length>0){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
+// async function hasInserted(keyword) {
+//     const result=await searchKeyword(keyword);
+//     console.log(result);
+//     if (result.length>0){
+//         return true;
+//     }
+//     else{
+//         return false;
+//     }
+// }
 export async function searchKeyword(keyword) {
     if (!keyword) return;
     const db=await openDB();

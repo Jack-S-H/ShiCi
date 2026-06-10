@@ -1,7 +1,7 @@
 {
     "name": "拾词",
     "description": "一本极简且好用的词语笔记本",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "manifest_version": 3,
     "permissions":[
             "storage"
@@ -22,7 +22,9 @@
     "content_scripts": [
         {
             "js": [
+                "scripts/card.js",
                 "scripts/content.js"
+                
             ],
             "css":[
                 "css/content.css"

@@ -1,4 +1,8 @@
 import { deletename, getall } from "./indexedBD.js";
+
+/**
+ * 
+ */
 //定义单词表列
 const displaytablehead = ["name", "usphone", "translate", "suggestion", "date","操作"];
 
@@ -48,8 +52,6 @@ document.addEventListener("DOMContentLoaded",async ()=>{
         delbutton.className="delete";
         delbutton.setAttribute("data-id",item.id);
         tr.appendChild(td);
-
-
 
         delbutton.addEventListener("click", (event) => {
             deletename(Number(event.target.getAttribute("data-id")));

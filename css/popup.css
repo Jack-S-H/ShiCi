@@ -4,6 +4,10 @@
 body {
   width: 15rem;
 }
+label{
+  display: block;
+}
+/* 作为浮窗定位的锚点 */
 .searchbox {
   position: relative;
   width: 100%;

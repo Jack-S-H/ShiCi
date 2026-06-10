@@ -1,13 +1,11 @@
 import { requestAI } from "./requestAI.js";
-import { createDB, deletename, getall, searchName } from "./indexedBD.js";
+import { deletename, getall, searchName } from "./indexedBD.js";
 import { insertDB } from "./indexedBD.js";
 import { searchKeyword } from "./indexedBD.js";
 
 //初始化
 chrome.runtime.onInstalled.addListener(async () => {
-    await createDB();
     chrome.runtime.openOptionsPage();
-    const result = await chrome.storage.local.get('deletedWords');
 });
 //定义行为
 const actions={
@@ -15,7 +13,6 @@ const actions={
 
         if (await searchName(message.text)) return sendResponse("单词重复！");
 
-        // 翻译并保存单词
         console.log('收到翻译请求:', message.text);
         const {"deepseekapikey":DSkey} = await chrome.storage.local.get("deepseekapikey");
 
@@ -39,6 +36,7 @@ const actions={
         const result=await deletename(Number(message.text));
         sendResponse(result);
     },
+    
     searchWord:async(message,sendResponse)=>{
         const text=await searchKeyword(message.text);
         sendResponse(text);
@@ -67,15 +65,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     return true;
 });
-
-// 3. 点击扩展图标
-// chrome.action.onClicked.addListener((tab) => {
-    // 可以注入脚本到当前标签页...
-// });
-
-// ===== 其他辅助函数可以写在下面 =====
-// async function saveWordToStorage(word, translation) {
-    // 存储逻辑...
-// }
-//返回json数据
-
