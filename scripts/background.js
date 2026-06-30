@@ -6,13 +6,13 @@ import { en2zh ,t_en2zh} from "./prompt.js";
 
 //初始化
 chrome.runtime.onInstalled.addListener(async (details) => {
+    // console.log(details);
     if (details.reason==='install') chrome.runtime.openOptionsPage();
-    // if (details.reason === 'update') {
-    //     chrome.tabs.create({
-    //         // url: chrome.runtime.getURL('https://my-awesome.blog')  // 扩展内置页面
-    //         url: 'https://my-awesome.blog/posts/guide-shici/'
-    //     });
-    // }
+    if (details.reason === 'update') {
+        chrome.tabs.create({
+            url: 'https://my-awesome.blog/posts/changelog-shici/'
+        });
+    }
 });
 
 //定义行为
