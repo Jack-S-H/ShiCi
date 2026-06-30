@@ -45,6 +45,7 @@ function createDB(){
         console.log("数据库已存在，请勿重复创建！");
     }
 }
+
 let dbInstance = null;
 async function openDB() {
     if (dbInstance) return dbInstance;
