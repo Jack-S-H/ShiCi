@@ -184,16 +184,15 @@ export async function deletename(key) {
     const getresult=ostore.get(key);
     const delresult=ostore.delete(key);
 
-    transaction.oncomplete=(e)=>{
-        console.log('事务完成');
-    };
-    transaction.onerror=(e)=>{
-        console.log(e.target.error);
-    };
-    return new Promise((resolve) => {
-        getresult.onsuccess = (e) => {
-            resolve(e.target.result);
-        }
+    return new Promise((resolve,reject) => {
+        transaction.oncomplete = (e) => {
+            console.log('删除事务完成');
+            resolve(true);
+        };
+        transaction.onerror = (e) => {
+            console.log(e.target.error);
+            reject(false);
+        };
     });
 }
 async function deletebykey(key) {

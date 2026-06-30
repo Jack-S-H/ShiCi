@@ -1,12 +1,10 @@
-import { en2zh } from "../prompt/en2zh.js";
-
 /**
  * 所有调用大模型的函数都定义在这个文件中。
  * 这里不处理错误，需要在调用时处理
  * 函数输出：如果成功就输出大模型回复的内容，如果失败就抛出错误
 */
 
-export async function requestAI(data,apikey) {
+export async function requestAI(sysprompt,data,apikey) {
     try{
         let response=await fetch("https://api.deepseek.com/chat/completions", {
             method: "POST",
@@ -19,7 +17,7 @@ export async function requestAI(data,apikey) {
             body: JSON.stringify({
                 "messages": [
                     {
-                        "content": en2zh(),
+                        "content": sysprompt,
                         "role": "system"
                     },
                     {

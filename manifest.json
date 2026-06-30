@@ -45,6 +45,20 @@
                 "default": "Ctrl+M",
                 "mac": "Command+B"
             }
+        },
+        "saveWord": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+S",
+                "mac": "Command+S"
+            },
+            "description":"标记和保存单词"
+        },
+        "traslate": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+T",
+                "mac": "Command+S"
+            },
+            "description": "翻译"
         }
     },
     "minimum_chrome_version":"102",

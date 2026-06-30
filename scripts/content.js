@@ -9,6 +9,8 @@
  * 这个文件实现的功能主要是保存和标记元素
  * 
 */
+let isincard=false;
+let isinword=false;
 function saveWord() {
     const selection=window.getSelection();
     //Selection {anchorNode: text, anchorOffset: 9, focusNode: text, focusOffset: 11, isCollapsed: false, …}
@@ -28,10 +30,10 @@ function saveWord() {
     //更大范围内的文字
     // const parentText=parentElement.innerText.trim();
 
-    if (parentElement.classList.contains('wavy-underline')) {
+    if (parentElement.classList.contains('underline-wavy')) {
         return;
     }
-    console.log("发送方：",range);
+    // console.log("发送方：",range);
     chrome.runtime.sendMessage(
         {
             action: 'saveWord',
@@ -65,8 +67,20 @@ function markWord(range){
     span.style.textUnderlineOffset = '4px';
     span.style.textDecorationColor = '#e74c3c';
     span.classList.add('underline-wavy');
-    span.addEventListener('mouseenter', (event) => showcard(event, span));
-    span.addEventListener('mouseleave', (e) => card.style.display = 'none');
+    span.addEventListener('mouseenter', (event) =>{
+        isinword = true;
+        showcard(span);
+    });
+    span.addEventListener('mouseleave', (e) => {
+        isinword = false;
+        const timer = setTimeout(() => {
+            if (!isincard) {
+                card.style.display = 'none';
+            }
+        }, 1);
+        
+
+    });
     const { startContainer, startOffset, endContainer, endOffset } = range;
 
     try {
@@ -82,7 +96,7 @@ function markWord(range){
         range.commonAncestorContainer,
         NodeFilter.SHOW_TEXT,
         {
-            acceptNode: function (node) {
+            acceptNode(node) {
                 if (!range.intersectsNode(node)) {
                     return NodeFilter.FILTER_REJECT;
                 }
@@ -131,13 +145,34 @@ function markWord(range){
         span.appendChild(targetNode);
     });
 }
-
 document.addEventListener('dblclick',saveWord);
 document.addEventListener('keydown', function (event) {
     if (event.key === 's' || event.key === 'S') {
         saveWord();
     }
 });
+document.addEventListener('keydown', function (event) {
+    if (event.key === 't' || event.key === 'T') {
+        translate();
+    }
+});
+async function translate() {
+    const selection = window.getSelection();
+    //Selection {anchorNode: text, anchorOffset: 9, focusNode: text, focusOffset: 11, isCollapsed: false, …}
+    const selectedText = selection.toString().trim();
+    //简单判断选取的内容是否符合规范
+    if (!selectedText) return;
+    if (!/[a-zA-Z]/.test(selectedText)) return;
+
+    chrome.runtime.sendMessage(
+        {
+            action: 'translate',
+            text: selectedText
+        }
+    )
+        .then(show_translation_card)
+        .catch(error => console.error('翻译请求失败:', error));
+}
 
 if (document.readyState !== 'loading') {
     initmark();
@@ -155,10 +190,11 @@ async function initmark(){
         action:"getallWord",
         text:""
     });
-    const walker = document.createTreeWalker(targetNode,NodeFilter.SHOW_TEXT);
+    const walker = document.createTreeWalker(targetNode, NodeFilter.SHOW_TEXT);
     let node;
     const Nodes = [];
     while ((node = walker.nextNode())) {
+        // console.log(node.parentElement.className);
         Nodes.push(node);
     }
 
@@ -187,9 +223,47 @@ async function initmark(){
         }
     }
 
-    for (let i = ranges.length - 1; i >= 0; i--) {
-        markWord(ranges[i]);
+    let node;
+    while ((node = walker.nextNode())) {
+        textNodes.push(node);
     }
 
+    textNodes.forEach((textNode) => {
+        const nodeRange = document.createRange();
+        nodeRange.selectNode(textNode);
+
+        const start = textNode === startContainer ? startOffset : 0;
+        const end = textNode === endContainer ? endOffset : textNode.length;
+
+        if (start === 0 && end === textNode.length) {
+            textNode.parentNode.replaceChild(span, textNode);
+            span.appendChild(textNode);
+            return;
+        }
+
+        let targetNode = textNode;
+
+        // 先分割出右侧多余部分，结束的尾部，如果结束位置不是末尾
+        if (end < textNode.length) {
+            targetNode.splitText(end);
+        }
+
+        // 分割出左侧多余部分，如果开始位置 > 0，此时 targetNode 变为包含选区内容的部分
+        if (start > 0) {
+            const leftPart = targetNode.splitText(start);
+            targetNode = leftPart;
+            // leftPart 现在包含从 start 到原来 end 的内容
+        }
+        // 现在 targetNode 正好是选区范围内的文本节点
+        targetNode.parentNode.replaceChild(span, targetNode);
+        span.appendChild(targetNode);
+    });
 }
 
+//自定义快捷键的测试代码
+// chrome.runtime.onMessage.addListener((message,sender,sendResponse)=>{
+//     switch(message.action){
+//         case "saveWord":
+//             saveWord();
+//     }
+// })

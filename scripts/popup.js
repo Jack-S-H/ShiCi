@@ -1,4 +1,18 @@
 
+const trashsvg = `
+    <svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+    <!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+    <g class="layer">
+        <title>Layer 1</title>
+        <path
+        d="m262.2,48c-13.3,0 -25.3,8.3 -30,20.8l-16.2,43.2l-96,0c-13.3,0 -24,10.7 -24,24c0,13.3 10.7,24 24,24l400,0c13.3,0 24,-10.7 24,-24c0,-13.3 -10.7,-24 -24,-24l-96,0l-16.2,-43.2c-4.7,-12.5 -16.6,-20.8 -30,-20.8l-115.6,0z"
+        id="svg_1"></path>
+        <path
+        d="m128,198l0,304c0,35.3 28.7,64 64,64l256,0c35.3,0 64,-28.7 64,-64l0,-304l-48,0l0,304c0,8.8 -7.2,16 -16,16l-256,0c-8.8,0 -16,-7.2 -16,-16l0,-304l-48,0zm160,72c0,-13.3 -10.7,-24 -24,-24c-13.3,0 -24,10.7 -24,24l0,176c0,13.3 10.7,24 24,24c13.3,0 24,-10.7 24,-24l0,-176zm112,0c0,-13.3 -10.7,-24 -24,-24c-13.3,0 -24,10.7 -24,24l0,176c0,13.3 10.7,24 24,24c13.3,0 24,-10.7 24,-24l0,-176z"
+        id="svg_2"></path>
+    </g>
+    </svg>
+`;
 //打开设置
 document.getElementById('openOptions').addEventListener('click',()=>{
     chrome.runtime.openOptionsPage();
@@ -37,16 +51,40 @@ async function doSearch(keyword) {
             const div = document.createElement('div');
             div.className = 'item';
             div.innerHTML = `
+            <div class="main">
                 <span class="word">${escapeHTML(word.name)}</span>
                 <span class="usphone">${escapeHTML(word.usphone)}</span>
                 <span class="translation">${escapeHTML(word.translate)}</span>
+            </div>
             `;
+            const delBtn=document.createElement('div');
+            delBtn.className="delBtn";
+            delBtn.innerHTML=trashsvg;
+            delBtn.addEventListener('click', async (e)=>{
+                delBtn.style.display="none";
+                await chrome.runtime.sendMessage(
+                    {
+                        action:"delWord",
+                        text:word.id
+                    }
+                ).then(response=>{
+                    console.log(response);
+                    if (response){
+                        div.style.display='none';
+                    }
+                    else{
+                        delBtn.style.display ="inline-block";
+                    }
+                });
+            });
             //点击单词后显示新页面
             // div.addEventListener('click', () => {
             //     showWordDetail(word);
             //     suggestions.style.display = 'none';
             // });
+            div.appendChild(delBtn);
             suggestions.appendChild(div);
+            // suggestions.appendChild(delBtn);
         });
         suggestions.style.display = 'block';
     }
@@ -75,5 +113,24 @@ async function doSave(key) {
         action: "saveWord",
         text: key
     });
+}
+// document.getElementById('translateBtn').addEventListener("click",()=>{
+//     const key=document.getElementById("translate").value;
+//     translate(key);
+// });
+async function translate(key){
+    const response = await chrome.runtime.sendMessage({
+        action:"translate",
+        text:key
+    });
+    const translation=document.getElementById('translation');
+    translation.innerHTML = `
+                <span class="item">${escapeHTML(response)}</span>
+            `;
+    //点击单词后显示新页面
+    // div.addEventListener('click', () => {
+    //     showWordDetail(word);
+    //     suggestions.style.display = 'none';
+    // });
 
 }

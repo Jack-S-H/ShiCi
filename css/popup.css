@@ -29,6 +29,16 @@ label{
 }
 .item{
   font-size: medium;
+
+  display: flex;
+  justify-content: space-between;
+}
+.item svg{
+  /* background-color: white;
+  color: white; */
+  width: 1.5em;
+  height: 1.5em;
+  fill: white;
 }
 h3,
 p {
