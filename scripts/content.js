@@ -145,6 +145,7 @@ function markWord(range){
         span.appendChild(targetNode);
     });
 }
+
 document.addEventListener('dblclick',saveWord);
 document.addEventListener('keydown', function (event) {
     if (event.key === 's' || event.key === 'S') {
@@ -223,43 +224,11 @@ async function initmark(){
         }
     }
 
-    let node;
-    while ((node = walker.nextNode())) {
-        textNodes.push(node);
+    for (let i = ranges.length - 1; i >= 0; i--) {
+        markWord(ranges[i]);
     }
 
-    textNodes.forEach((textNode) => {
-        const nodeRange = document.createRange();
-        nodeRange.selectNode(textNode);
-
-        const start = textNode === startContainer ? startOffset : 0;
-        const end = textNode === endContainer ? endOffset : textNode.length;
-
-        if (start === 0 && end === textNode.length) {
-            textNode.parentNode.replaceChild(span, textNode);
-            span.appendChild(textNode);
-            return;
-        }
-
-        let targetNode = textNode;
-
-        // 先分割出右侧多余部分，结束的尾部，如果结束位置不是末尾
-        if (end < textNode.length) {
-            targetNode.splitText(end);
-        }
-
-        // 分割出左侧多余部分，如果开始位置 > 0，此时 targetNode 变为包含选区内容的部分
-        if (start > 0) {
-            const leftPart = targetNode.splitText(start);
-            targetNode = leftPart;
-            // leftPart 现在包含从 start 到原来 end 的内容
-        }
-        // 现在 targetNode 正好是选区范围内的文本节点
-        targetNode.parentNode.replaceChild(span, targetNode);
-        span.appendChild(targetNode);
-    });
 }
-
 //自定义快捷键的测试代码
 // chrome.runtime.onMessage.addListener((message,sender,sendResponse)=>{
 //     switch(message.action){
