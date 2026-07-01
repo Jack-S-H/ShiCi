@@ -146,14 +146,20 @@ function markWord(range){
     });
 }
 
+// function isinputable(selection) {
+//     const node = selection.anchorNode;
+//     if (!node) return false;
+//     const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+//     return element.closest('input, textarea, [contenteditable="true"]') !== null;
+// }
 document.addEventListener('dblclick',saveWord);
 document.addEventListener('keydown', function (event) {
-    if (event.key === 's' || event.key === 'S') {
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 's') {
         saveWord();
     }
 });
 document.addEventListener('keydown', function (event) {
-    if (event.key === 't' || event.key === 'T') {
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 't') {
         translate();
     }
 });

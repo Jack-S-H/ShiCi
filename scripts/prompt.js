@@ -29,9 +29,13 @@ json
 `;
 }
 export function t_en2zh() {
-  return `要求使用专业的翻译员的思路来翻译这句句子，只输出译文，不输出任何其他内容。
+  return `要求使用专业的翻译员的思路来翻译这句句子，只返回一个合法的 JSON 对象，不输出任何额外内容。
 示例：
   输入：Look at your situation from our perspective
-  输出：从我们的角度看看你的处境
+  输出：
+json
+{
+  "translation": "",
+  }
 `;
 }
