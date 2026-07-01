@@ -2,7 +2,7 @@
 
 一本极简且好用的词语笔记本。
 
-[![Static Badge](https://img.shields.io/badge/chrome-web-store)](https://chromewebstore.google.com/detail/%E6%8B%BE%E8%AF%8D/hoejicmjdnmpicbiaocjepmlidjgpokn?hl=zh-CN)
+[![Static Badge](https://img.shields.io/badge/Chrome_Web_Store-%E6%8B%BE%E8%AF%8D-blue?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/%E6%8B%BE%E8%AF%8D/hoejicmjdnmpicbiaocjepmlidjgpokn?hl=zh-CN)
 
 本人为js初学者，欢迎各位指导。
 
@@ -20,17 +20,16 @@
 │   └── options.html          # API Key 配置页面
 ├── scripts/
 │   ├── background.js         # Service Worker 主逻辑
+│   ├── card.js               # 实现网页上的单词卡片弹窗
 │   ├── content.js            # 内容脚本：划词、波浪线标记
-│   ├── requestAI.js          # 请求 DeepSeek API 封装
 │   ├── indexedBD.js          # IndexedDB 操作封装
 │   ├── option.js             # 选项页交互逻辑
-│   └── popup.js              # 弹窗搜索交互逻辑
-│   └── card.js               # 实现网页上的单词卡片弹窗
+│   ├── popup.js              # 弹窗搜索交互逻辑
+│   ├── prompt.js             # AI 翻译提示词
+│   └── requestAI.js          # 请求 DeepSeek API 封装
 ├── css/
 │   ├── popup.css
 │   └── option.css
-├── prompt/
-│   └── en2zh.js              # AI 翻译提示词
 └── images/                   # 扩展图标
 ```
 ## 开发计划
