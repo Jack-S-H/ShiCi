@@ -56,11 +56,8 @@ delBtn.addEventListener('click',(e)=>{
 async function showcard(element) {
     delBtn.style.display='inline-block';
     // console.log("选择的元素：", element);
-    // const keyword = element.firstChild?.textContent?.trim().toLowerCase() ||
-    //     element.textContent.trim().toLowerCase();
-    
-    const keyword=element.textContent.trim().toLowerCase();
-
+    const keyword = element.firstChild?.textContent?.trim().toLowerCase() ||
+        element.textContent.trim().toLowerCase();
     const result = await searchWordwithRetry(keyword, 30, 1000);
     if (!result) return;
 
