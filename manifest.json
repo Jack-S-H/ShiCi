@@ -1,7 +1,7 @@
 {
     "name": "拾词",
     "description": "一本极简且好用的词语笔记本",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "manifest_version": 3,
     "permissions":[
             "storage"
@@ -51,14 +51,14 @@
                 "default": "Ctrl+Shift+S",
                 "mac": "Command+S"
             },
-            "description":"标记和保存单词"
+            "description":"（暂未启用自定义快捷键）标记和保存单词"
         },
         "traslate": {
             "suggested_key": {
                 "default": "Ctrl+Shift+T",
                 "mac": "Command+S"
             },
-            "description": "翻译"
+            "description": "（暂未启用自定义快捷键）翻译"
         }
     },
     "minimum_chrome_version":"102",
