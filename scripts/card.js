@@ -101,11 +101,7 @@ function positioncard(element=null) {
 
     let left=rect.left;
     let top=rect.bottom;
-    if(left+bottom==0){
-        card.style.left = '10px';
-        card.style.top = '10px';
-        return;
-    }
+
     // 防止超出右边界
     if (left+card.offsetWidth > window.innerWidth) {
         left = window.innerWidth - card.offsetWidth - 30;
@@ -117,7 +113,7 @@ function positioncard(element=null) {
     }
 
     card.style.left = left + 'px';
-    card.style.top = top + '2px';
+    card.style.top = top + 'px';
 }
 // 搜索数据库
 async function searchWordwithRetry(keyword, times, Ms) {
