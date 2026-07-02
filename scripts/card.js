@@ -58,6 +58,7 @@ async function showcard(element) {
     // console.log("选择的元素：", element);
     const keyword = element.firstChild?.textContent?.trim().toLowerCase() ||
         element.textContent.trim().toLowerCase();
+    console.log(keyword);
     const result = await searchWordwithRetry(keyword, 30, 1000);
     if (!result) return;
 
@@ -91,7 +92,7 @@ async function show_translation_card(content){
 
 // 定位弹窗
 function positioncard(element=null) {
-    if(!element){
+    if (!element){
         card.style.left = '10px';
         card.style.top = '10px';
         return;
@@ -100,7 +101,11 @@ function positioncard(element=null) {
 
     let left=rect.left;
     let top=rect.bottom;
-
+    if(left+bottom==0){
+        card.style.left = '10px';
+        card.style.top = '10px';
+        return;
+    }
     // 防止超出右边界
     if (left+card.offsetWidth > window.innerWidth) {
         left = window.innerWidth - card.offsetWidth - 30;
@@ -134,6 +139,12 @@ async function searchWordwithRetry(keyword, times, Ms) {
         return searchWordwithRetry(keyword, times - 1, Ms);
     }
 }
+// 点击页面其他地方关闭card
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.snatch-wordcard')) {
+        card.style.display = 'none';
+    }
+});
 //删除单词快捷键的定义
 // document.addEventListener('keydown', function (event) {
 //     if (event.key === 'Delete' && event.ctrlKey) {
@@ -145,11 +156,5 @@ async function searchWordwithRetry(keyword, times, Ms) {
 //                 console.log("删除成功：", response);
 //             })
 //             .catch(error => console.error('删除失败:', error));
-//     }
-// });
-// 点击页面其他地方关闭card
-// document.addEventListener('click', (e) => {
-//     if (!e.target.closest('.snatch-wordcard')) {
-//         card.style.display = 'none';
 //     }
 // });
