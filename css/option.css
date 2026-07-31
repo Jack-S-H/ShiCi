@@ -13,7 +13,8 @@
 }
 body{
     font-size: 1rem;
-    background-color:var(--color-primary)
+    background-color:var(--color-primary);
+    color: var(--color-secondary);
 }
 label{
     color: var(--color-secondary);
@@ -36,8 +37,11 @@ td{
 }
 button{
     display: inline-block;
+
     background:var(--color-tertiary);
     color: var(--color-primary);
-    border: var(--color-tertiary);
     border-radius: 4px;
+    /* 按钮不可选中 */
+    user-select: none;
+    
 }

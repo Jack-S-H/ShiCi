@@ -1,5 +1,5 @@
 //数据库版本
-const DBversion=2;
+const DBversion=1;
 //数据库索引列表
 const indexes = [
     ['name', 'name', true ],
@@ -8,49 +8,17 @@ const indexes = [
     ['searchname', 'searchname', false],
     ['suggestion', 'suggestion', false],
 ];
-
+const DBname="ShiCi";
 /**
  * 
  */
-function createDB(){
-    let db;
-    const request = indexedDB.open("snatchwords", DBversion);
-    request.onerror = (event) => {
-        console.error("为什么不让我们的 Web 应用使用 IndexedDB！？");
-        // 使用 request.error 做些处理！
-    };
-    request.onupgradeneeded = (event) => {
-        db = event.target.result;
-        const objectStore = db.objectStoreNames.contains('words')
-            ? event.target.transaction.objectStore('words')
-            : db.createObjectStore('words', { keyPath: 'id', autoIncrement: true });
-
-        for (const [indexName, keyPath, unique] of indexes) {
-            if (!objectStore.indexNames.contains(indexName)) {
-                objectStore.createIndex(indexName, keyPath, {unique:unique});
-            }
-            else if(objectStore.index(indexName).keyPath !== keyPath){
-                objectStore.deleteIndex(indexName);
-                objectStore.createIndex(indexName, keyPath, { unique: unique });
-            }
-            else if (objectStore.index(indexName).unique !== unique) {
-                objectStore.deleteIndex(indexName);
-                objectStore.createIndex(indexName, keyPath, { unique: unique });
-            }
-        }
-        console.log("数据库已创建！")
-    }
-    request.onsuccess=(event)=>{
-
-        console.log("数据库已存在，请勿重复创建！");
-    }
-}
-
+// 打开数据库
+// 数据库持久化打开标志
 let dbInstance = null;
 async function openDB() {
     if (dbInstance) return dbInstance;
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("snatchwords", DBversion);
+        const request = indexedDB.open(DBname, DBversion);
 
         request.onerror = (event) => {
             console.error("打开数据库失败", request.error);
@@ -62,11 +30,98 @@ async function openDB() {
             resolve(db);
         }
         request.onupgradeneeded = (event) => {
-            // console.warn("数据库不存在，请先调用 createDB");
-            createDB();
+            const db = event.target.result;
+            const objectStore = db.objectStoreNames.contains('words')
+                ? event.target.transaction.objectStore('words')
+                : db.createObjectStore('words', { keyPath: 'id', autoIncrement: true });
+
+            for (const [indexName, keyPath, unique] of indexes) {
+                if (!objectStore.indexNames.contains(indexName)) {
+                    objectStore.createIndex(indexName, keyPath, { unique: unique });
+                }
+                else if (objectStore.index(indexName).keyPath !== keyPath) {
+                    objectStore.deleteIndex(indexName);
+                    objectStore.createIndex(indexName, keyPath, { unique: unique });
+                }
+                else if (objectStore.index(indexName).unique !== unique) {
+                    objectStore.deleteIndex(indexName);
+                    objectStore.createIndex(indexName, keyPath, { unique: unique });
+                }
+            }
+            console.log("数据库已创建！");
         }
     });
 }
+//迁移数据库
+export async function renameDB(oldName, newName, version) {
+    const oldDB = await new Promise((resolve, reject) => {
+        const request = indexedDB.open(oldName);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+
+    const storeNames = Array.from(oldDB.objectStoreNames);
+
+    const allData = {};
+    for (const name of storeNames) {
+        const tx = oldDB.transaction(name, 'readonly');
+        const store = tx.objectStore(name);
+        allData[name] = await new Promise((resolve, reject) => {
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    oldDB.close();
+
+    const newDB = await new Promise((resolve, reject) => {
+        const request = indexedDB.open(newName, version);
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            for (const name of storeNames) {
+                if (!db.objectStoreNames.contains(name)) {
+                    const objectStore = db.createObjectStore('words', { keyPath: 'id', autoIncrement: true });
+                    for (const [indexName, keyPath, unique] of indexes) {
+                        if (!objectStore.indexNames.contains(indexName)) {
+                            objectStore.createIndex(indexName, keyPath, { unique: unique });
+                        }
+                        else if (objectStore.index(indexName).keyPath !== keyPath) {
+                            objectStore.deleteIndex(indexName);
+                            objectStore.createIndex(indexName, keyPath, { unique: unique });
+                        }
+                        else if (objectStore.index(indexName).unique !== unique) {
+                            objectStore.deleteIndex(indexName);
+                            objectStore.createIndex(indexName, keyPath, { unique: unique });
+                        }
+                    }
+                }
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+
+    for (const [name, data] of Object.entries(allData)) {
+        if (data.length === 0) continue;
+        const tx = newDB.transaction(name, 'readwrite');
+        const store = tx.objectStore(name);
+        for (const item of data) {
+            store.add(item);
+        }
+        await new Promise((resolve, reject) => {
+            tx.oncomplete = resolve;
+            tx.onerror = reject;
+        });
+    }
+    newDB.close();
+
+    // 6. 删除旧数据库（可选，确认数据正常后再做）
+    indexedDB.deleteDatabase(oldName);
+
+    console.log(`数据库已从 "${oldName}" 复制到 "${newName}"`);
+}
+
+// 插入数据
 export async function insertDB(data) {
     const db=await openDB();
 
@@ -75,10 +130,10 @@ export async function insertDB(data) {
         console.log("已经处理完了！");
     };
     //事务级错误处理
-    transaction.onerror = (event) => {
-        console.error("打开事务失败", event.target.error);
-        // 别忘了处理错误！
-    };
+    // transaction.onerror = (event) => {
+    //     console.error("打开事务失败", event.target.error);
+    //     // 别忘了处理错误！
+    // };
     // 单条失败不会中止整个事务
     const objectStore = transaction.objectStore("words");
     const request = objectStore.add(data);
@@ -89,7 +144,7 @@ export async function insertDB(data) {
         console.error("插入失败，数据：",data,"原因", event.target.error);
     };
 };
-
+// 通过名称搜索数据库
 export async function searchName(name) {
     const db=await openDB();
     const request=db
@@ -107,6 +162,33 @@ export async function searchName(name) {
     };
     return result;
 }
+// 首字母模糊搜索
+export async function searchKeyword(keyword) {
+    if (!keyword) return;
+    const db = await openDB();
+    const index = db.transaction('words', 'readonly')
+        .objectStore('words')
+        .index('searchname');
+
+    const lowerBound = keyword;
+    const upperBound = keyword + '\uffff';
+    const range = IDBKeyRange.bound(lowerBound, upperBound, false, true);
+
+    const results = await new Promise((resolve) => {
+        const items = [];
+        index.openCursor(range, 'nextunique').onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor && items.length < 10) {
+                items.push(cursor.value);
+                cursor.continue();
+            } else {
+                resolve(items);
+            }
+        };
+    });
+    return results;
+}
+// 获取所有的key列
 // async function getallkeys(key,items) {
 //     const db=await openDB();
 //     const index=db.transaction('words').objectStore('words').index(key);
@@ -123,6 +205,8 @@ export async function searchName(name) {
 //         };
 //     });
 // }
+
+// 获取所有数据
 export async function getall() {
     const db=await openDB()
     const index=db.transaction('words')
@@ -152,31 +236,8 @@ export async function getall() {
 //         return false;
 //     }
 // }
-export async function searchKeyword(keyword) {
-    if (!keyword) return;
-    const db=await openDB();
-    const index = db.transaction('words', 'readonly')
-        .objectStore('words')
-        .index('searchname');
 
-    const lowerBound = keyword;
-    const upperBound = keyword + '\uffff';
-    const range = IDBKeyRange.bound(lowerBound, upperBound, false, true);
-
-    const results=await new Promise((resolve)=>{
-        const items = [];
-        index.openCursor(range, 'nextunique').onsuccess = (event) => {
-            const cursor = event.target.result;
-            if (cursor && items.length < 10) {
-                items.push(cursor.value);
-                cursor.continue();
-            } else{
-                resolve(items);
-            }
-        };
-    });
-    return results;
-}
+// 使用id号删除
 export async function deletename(key) {
     const db=await openDB();
     const transaction=db.transaction('words',"readwrite");
@@ -188,7 +249,7 @@ export async function deletename(key) {
     return new Promise((resolve,reject) => {
         transaction.oncomplete = (e) => {
             console.log('删除事务完成');
-            resolve(true);
+            resolve(key);
         };
         transaction.onerror = (e) => {
             console.log(e.target.error);
@@ -196,6 +257,7 @@ export async function deletename(key) {
         };
     });
 }
+// 使用名称删除
 async function deletebykey(key) {
     const db = await openDB();
     const ostore = db.transaction('words', "readwrite").objectStore('words').index('name');

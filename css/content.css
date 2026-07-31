@@ -7,7 +7,7 @@
 .shici-wordcard {
     display: none;
     position: fixed;
-    /* z-index: 99999; */
+    z-index: 99999;
 
     min-height: 144px;
     max-width: 350px;

@@ -1,4 +1,3 @@
-
 const trashsvg = `
     <svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
     <!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
@@ -51,7 +50,7 @@ async function doSearch(keyword) {
             const div = document.createElement('div');
             div.className = 'item';
             div.innerHTML = `
-            <div class="main">
+            <div>
                 <span class="word">${escapeHTML(word.name)}</span>
                 <span class="usphone">${escapeHTML(word.usphone)}</span>
                 <span class="translation">${escapeHTML(word.translate)}</span>
@@ -103,7 +102,7 @@ document.addEventListener('click', (e) => {
         suggestions.style.display = 'none';
     }
 });
-
+//手动录入单词
 document.getElementById("savewordBtn").addEventListener("click", () => {
     const key = document.getElementById("saveword").value;
     doSave(key);
@@ -114,23 +113,116 @@ async function doSave(key) {
         text: key
     });
 }
+// 翻译功能
 // document.getElementById('translateBtn').addEventListener("click",()=>{
 //     const key=document.getElementById("translate").value;
 //     translate(key);
 // });
-async function translate(key){
-    const response = await chrome.runtime.sendMessage({
-        action:"translate",
-        text:key
-    });
-    const translation=document.getElementById('translation');
-    translation.innerHTML = `
-                <span class="item">${escapeHTML(response)}</span>
-            `;
-    //点击单词后显示新页面
-    // div.addEventListener('click', () => {
-    //     showWordDetail(word);
-    //     suggestions.style.display = 'none';
-    // });
+// async function translate(key){
+//     const response = await chrome.runtime.sendMessage({
+//         action:"translate",
+//         text:key
+//     });
+//     const translation=document.getElementById('translation');
+//     translation.innerHTML = `
+//                 <span class="item">${escapeHTML(response)}</span>
+//             `;
+//     //点击单词后显示新页面
+//     div.addEventListener('click', () => {
+//         showWordDetail(word);
+//         suggestions.style.display = 'none';
+//     });
 
+// }
+
+// 定义导入进度的弹窗
+const dialog = document.getElementById('importDialog');
+const curImport = document.createElement('p');
+const result = document.createElement('p');
+dialog.appendChild(curImport);
+dialog.appendChild(result);
+
+// 定义成功和失败
+let oknum = '';
+let errnum = '';
+
+// 导入函数
+async function importWord(action, text, name) {
+    curImport.textContent = '正在导入：' + name;
+
+    const response = await chrome.runtime.sendMessage({ action, text });
+
+    if (response.ok) {
+        oknum += name + ',';
+    } else {
+        errnum += name + '<br>' + response.error + '<br>';
+    }
+    result.innerHTML = '成功：' + oknum + '<br>失败：' + errnum;
 }
+
+//单词导入
+//根据导入的文件格式，选择处理方式
+// name;translate;usphone;suggestion
+// 英文；翻译；读音；记忆建议
+document.getElementById('importBtn').addEventListener('click', (event) => {
+    const inputFile = document.getElementById('importFile');
+    const file = inputFile.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+        // 获取文件数据
+        const content = e.target.result;
+        dialog.showModal();
+
+        switch (file.type) {
+            case 'application/json':
+                // 显示弹窗
+                
+                for (const item of JSON.parse(content)) {
+                    await importWord('saveWord', item.name, item.name);
+                }
+                break;
+            case 'text/plain':
+                for (const data of content.split('\n')) {
+                    const word = data.split(/[;；]/);
+                    const name = word[0];
+                    // 判断翻译存在与否插入或保存单词
+                    const action = word[1].trim() ? 'insertWord' : 'saveWord';
+                    const text = word[1].trim() ? word : name;
+
+                    await importWord(action, text, name);
+                }
+                break;
+        }
+        curImport.textContent = '导入完成';
+    };
+    reader.readAsText(file);
+});
+
+// 创建下载
+function download(content, filename = 'words.txt') {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);  // 释放内存
+}
+// 单词导出
+document.getElementById('exportBtn').addEventListener('click', async (e)=>{
+    const response = await chrome.runtime.sendMessage({
+        action: "getallWord",
+        text:""
+    });
+    //构建字段
+    let words = Object.keys(response[0]).join(';')+'\n';
+    // console.log(response);
+    for (const word of response) {
+        // console.log(word.name);
+        const row = Object.values(word).join(';');
+        words += row + '\n';
+    }
+    download(words);
+});

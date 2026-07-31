@@ -1,11 +1,19 @@
 :root{
-  size: 10px;
+  size: 16px;
 }
 body {
   width: 15rem;
 }
-label{
-  display: block;
+header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+main{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 /* 作为浮窗定位的锚点 */
 .searchbox {
@@ -29,13 +37,10 @@ label{
 }
 .item{
   font-size: medium;
-
-  display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  margin-bottom: 1rem;
 }
 .item svg{
-  /* background-color: white;
-  color: white; */
   width: 1.5em;
   height: 1.5em;
   fill: white;
@@ -43,4 +48,23 @@ label{
 h3,
 p {
   margin: 0;
+}
+.savewordbox button{
+  display: flex;
+  justify-self: flex-end;
+  align-self:self-start ;
+  margin-top: 5px;
+}
+main div{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+#import{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+#importFile {
+  width: 70%;
 }

@@ -10,9 +10,12 @@
     <link rel="stylesheet" href="../css/popup.css" />
 </head>
 <body>
-    <button id="openOptions">设置</button>
-    <form>
-        <label for="search" class="searchbox">搜索单词：
+    <header>
+            <h3>弹窗</h3>
+            <button id="openOptions">设置</button>
+    </header>
+    <main>
+        <label for="searchinput" class="searchbox">搜索单词：
             <input type="text" id="searchinput" placeholder="输入搜索内容" autofocus>
             <div id="suggestions">
             </div>
@@ -21,9 +24,20 @@
             <input type="text" id="saveword" placeholder="输入要录入的单词">
             <button type="button" id="savewordBtn">提交</button>
         </label>
-    </form>
-
-    
+        <div>
+            <span>单词导入和导出：</span>
+            <div id="import">
+                <input type="file" id="importFile" accept=".json,.txt">
+                <button type="button" id="importBtn">导入</button>
+            </div>
+            <button type="button" id="exportBtn">单词导出</button>
+        </div>
+        <dialog id="importDialog">
+            <form method="dialog">
+                <button value="confirm">确认</button>
+            </form>
+        </dialog>
+    </main>
     <script src="../scripts/popup.js" type="module"></script>
 </body>
 

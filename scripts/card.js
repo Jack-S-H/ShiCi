@@ -101,7 +101,12 @@ function positioncard(element=null) {
 
     let left=rect.left;
     let top=rect.bottom;
-
+    // console.log("left:",left,"top:",top)
+    // if(left+top==0){
+    //     card.style.left = '10px';
+    //     card.style.top = '10px';
+    //     return;
+    // }
     // 防止超出右边界
     if (left+card.offsetWidth > window.innerWidth) {
         left = window.innerWidth - card.offsetWidth - 30;
