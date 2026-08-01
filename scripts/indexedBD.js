@@ -57,9 +57,11 @@ export async function renameDB(oldName, newName, version) {
     const oldDB = await new Promise((resolve, reject) => {
         const request = indexedDB.open(oldName);
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        request.onerror = () => resolve(null);
     });
-
+    if (!oldDB) {
+        return;
+    }
     const storeNames = Array.from(oldDB.objectStoreNames);
 
     const allData = {};
@@ -114,8 +116,7 @@ export async function renameDB(oldName, newName, version) {
         });
     }
     newDB.close();
-
-    // 6. 删除旧数据库（可选，确认数据正常后再做）
+    
     indexedDB.deleteDatabase(oldName);
 
     console.log(`数据库已从 "${oldName}" 复制到 "${newName}"`);
