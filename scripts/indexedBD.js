@@ -59,11 +59,12 @@ export async function renameDB(oldName, newName, version) {
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => resolve(null);
     });
-    if (!oldDB) {
+    const storeNames = Array.from(oldDB.objectStoreNames);
+    if (storeNames.length === 0) {
+        oldDB.close();
+        indexedDB.deleteDatabase(oldName);
         return;
     }
-    const storeNames = Array.from(oldDB.objectStoreNames);
-
     const allData = {};
     for (const name of storeNames) {
         const tx = oldDB.transaction(name, 'readonly');

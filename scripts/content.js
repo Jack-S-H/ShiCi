@@ -88,7 +88,7 @@ function markWord(range){
         console.log('简单选择');
         return;
     } catch (e) {
-        console.warn('跨元素选择:',e);
+        console.warn('选择错误:',e.name+":"+e.message);
     }
 
     const textNodes = [];
@@ -181,11 +181,7 @@ async function translate() {
         .catch(error => console.error('翻译请求失败:', error));
 }
 
-if (document.readyState !== 'loading') {
-    initmark();
-} else {
-    document.addEventListener('DOMContentLoaded', initmark);
-}
+requestIdleCallback(initmark);
 
 /**
  * 用treeworker遍历，获取数据库key，对照，创建range，调用mark函数
@@ -197,6 +193,7 @@ async function initmark(){
         action:"getallWord",
         text:""
     });
+    if (!targetNode) return;
     const walker = document.createTreeWalker(targetNode, NodeFilter.SHOW_TEXT);
     let node;
     const Nodes = [];
