@@ -1,7 +1,7 @@
 {
     "name": "拾词",
     "description": "一本极简且好用的词语笔记本",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "manifest_version": 3,
     "permissions":[
             "storage"
