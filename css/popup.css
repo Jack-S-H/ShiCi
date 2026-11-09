@@ -2,7 +2,9 @@
   size: 16px;
 }
 body {
-  width: 15rem;
+  width: 16rem;
+  font-size: 0.9rem;
+  max-height: 100vh;
 }
 header{
   display: flex;
@@ -14,7 +16,11 @@ main{
   display: flex;
   flex-direction: column;
   gap: 5px;
+  /* background-color: var(--animal-bg-content); */
+  scrollbar-width: none;
 }
+
+/* 搜索候选框 */
 /* 作为浮窗定位的锚点 */
 .searchbox {
   position: relative;
@@ -26,45 +32,61 @@ main{
   position: absolute;
   top: 100%;
   left: 0;
+
+  display: none;
+  min-width: 120px;
   width: 100%;
-  background-color: black;
-  border-radius: 0 0 6px 6px;
+  max-height: 100vh;
+  /* height: 1000px; */
+  background-color: #fceb9d;
+
   box-shadow: 0 4px 12px rgb(246, 244, 244);
-  max-height: 300px;
+
   overflow-y: auto;
   z-index: 1000;
-  display: none;
+
+  padding: 10px;
+  scrollbar-width: none;
 }
 .item{
   font-size: medium;
   flex-direction: row;
   margin-bottom: 1rem;
+  justify-content: space-between;
 }
-.item svg{
-  width: 1.5em;
-  height: 1.5em;
-  fill: white;
-}
+
+
+
 h3,
 p {
   margin: 0;
 }
-.savewordbox button{
+
+/* 录入单词 */
+.savewordbox{
   display: flex;
-  justify-self: flex-end;
-  align-self:self-start ;
-  margin-top: 5px;
+  flex-direction: column;
 }
+.savewordbox>div {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.savewordbox input{
+  /* flex:1; */
+  width: 70%;
+  min-width: 0;
+}
+
 main div{
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
+
+/* 导入文件 */
 #import{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-#importFile {
-  width: 70%;
 }

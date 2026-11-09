@@ -15,10 +15,15 @@ const trashsvg = `
   </g>
 </svg>
 `;
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev
 //创建全局弹窗元素
 const card = document.createElement('div');
 card.className = 'shici-wordcard';
 card.innerHTML = `
+<<<<<<< HEAD
     <div class="head">
         <div class="word"></div>
         ${trashsvg}
@@ -54,6 +59,52 @@ delBtn.addEventListener('click',(e)=>{
 });
 //主程序
 async function showcard(element) {
+=======
+<div class="head">
+    <div class="word"></div>
+    ${trashsvg}
+</div>
+<div class="usphon"></div>
+<div class="translation"></div>
+<div class="suggestion"></div>
+`;
+card.addEventListener('mouseenter', (e) => {
+    isincard = true;
+});
+card.addEventListener('mouseleave', (e) => {
+    isincard = false;
+    const timer = setTimeout(() => {
+        if (!isinword) {
+            card.style.display = 'none';
+        }
+    }, 1);
+});
+
+
+
+// document.body.appendChild(card);
+requestIdleCallback(() => {
+    document.body.appendChild(card);
+    let delBtn = document.getElementById("shici-delBtn");
+    delBtn.addEventListener('click', (e) => {
+        chrome.runtime.sendMessage({
+            action: "delWord",
+            text: card.getAttribute("data-id")
+        })
+            .then(response => {
+                if (response) {
+                    card.style.display = "none";
+                }
+            })
+    });
+});
+
+
+//主程序
+async function showcard(element) {
+
+    let delBtn = document.getElementById("shici-delBtn");
+>>>>>>> dev
     delBtn.style.display='inline-block';
     // console.log("选择的元素：", element);
     const keyword = element.firstChild?.textContent?.trim().toLowerCase() ||
@@ -78,7 +129,11 @@ async function showcard(element) {
     positioncard(element);
 }
 async function show_translation_card(content){
+<<<<<<< HEAD
 
+=======
+    let delBtn = document.getElementById("shici-delBtn");
+>>>>>>> dev
     delBtn.style.display='none';
 
     card.querySelector('.word').textContent = '';

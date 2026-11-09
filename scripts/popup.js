@@ -178,7 +178,10 @@ document.getElementById('importBtn').addEventListener('click', (event) => {
         switch (file.type) {
             case 'application/json':
                 // 显示弹窗
+<<<<<<< HEAD
                 
+=======
+>>>>>>> dev
                 for (const item of JSON.parse(content)) {
                     await importWord('saveWord', item.name, item.name);
                 }
@@ -225,4 +228,8 @@ document.getElementById('exportBtn').addEventListener('click', async (e)=>{
         words += row + '\n';
     }
     download(words);
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> dev

@@ -1,0 +1,252 @@
+
+/* Nunito 拉丁字体 */
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./fonts/nunito-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./fonts/nunito-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('./fonts/nunito-latin-900-normal.woff2') format('woff2');
+}
+
+/* Noto Sans SC 拉丁子集 */
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./fonts/noto-sans-sc-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./fonts/noto-sans-sc-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Noto Sans SC';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./fonts/noto-sans-sc-latin-700-normal.woff2') format('woff2');
+}
+
+
+
+/* GROBOLD 展示字体（首页 Hero 标题） */
+@font-face {
+    font-family: 'GROBOLD';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('./fonts/GROBOLD-1.ttf') format('truetype');
+}
+:root {
+    /* Fonts */
+    --animal-font: 'Nunito', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Hiragino Sans GB';
+    /* Primary color */
+    --animal-primary: #19c8b9;
+    --animal-primary-hover: #3dd4c6;
+    --animal-primary-active: #11a89b;
+    --animal-primary-bg: #e6f9f6;
+
+    /* Text */
+    --animal-text: #794f3f;
+    --animal-text-body: #725d42;
+    --animal-text-secondary: #9f927d;
+    --animal-text-muted: #8a7b66;
+    --animal-text-disabled: #c4b89e;
+
+    /* Backgrounds */
+    --animal-bg: #f8f8f0;
+    --animal-bg-content: rgb(247, 243, 223);
+    --animal-bg-disabled: #f0ece2;
+
+    /* Borders */
+    --animal-border: #c4b89e;
+    --animal-border-hover: #a89878;
+
+    /* Radius */
+    --animal-radius-sm: 12px;
+    --animal-radius: 18px;
+    --animal-radius-lg: 24px;
+    --animal-radius-pill: 50px;
+
+    /* 3D shadows */
+    --animal-shadow-btn: #bdaea0;
+    --animal-shadow-input: #d4c9b4;
+    --animal-shadow-switch: #5a9e1e;
+
+    /* Game-specific colors */
+    --animal-focus-yellow: #ffcc00;
+    --animal-focus-yellow-d: #e0b800;
+    --animal-sidebar-active: #b7c6e5;
+    --animal-sidebar-hover: #d6dff0;
+
+    /* Status */
+    --animal-success: #6fba2c;
+    --animal-warning: #f5c31c;
+    --animal-error: #e05a5a;
+
+    /* Motion */
+    --animal-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --animal-duration-fast: 0.15s;
+    --animal-duration: 0.25s;
+    --animal-duration-slow: 0.35s;
+}
+
+body{
+    font-family: var(--animal-font);
+    font-weight: 500;
+    
+    color: var(--animal-text);
+    background-color: #83c79d;
+}
+
+/* 按钮 */
+button {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+
+    border-radius: var(--animal-radius-pill);
+    border: 2px solid var(--animal-border);
+    box-shadow: var(--animal-shadow-btn);
+
+    background: var(--animal-bg);
+    color: var(--animal-text);
+
+    transition: all var(--animal-duration) var(--animal-ease);
+}
+button:hover{
+    color: var(--animal-primary);
+    border-color: var(--animal-primary);
+    box-shadow: var(--animal-shadow-btn);
+    transform: translateY(-1px);
+}
+button:active{
+    color: var(--animal-primary-active);
+    border-color: var(--animal-primary-active);
+    transform: translateY(0);
+    box-shadow: var(--animal-shadow-btn);
+}
+
+/* 输入框 */
+input{
+    background-color: #fff;
+    border: none;
+    outline: none;
+
+    border-radius: 50px;
+
+    padding: 5px;
+    color: var(--animal-text);
+}
+input::hover{
+    box-shadow: 0 3px 0 0 var(--animal-border);
+    
+}
+input:focus{
+    border: none;
+    /* box-shadow: 0 0 0 3px var(--animal-focus-yellow);; */
+}
+label{
+    color: var(--animal-text);
+}
+
+/* 表格 */
+table {
+    border: none;
+    border-collapse: collapse;
+
+    font-family: var(--animal-font);
+
+}
+th{
+    white-space: nowrap;
+    
+}
+th,td{
+    border: none;
+    /* padding: 0.2rem 0.5rem; */
+    text-align: center;
+    color: var(--color-secondary);
+    padding: 5px 10px;
+}
+
+tbody tr:nth-child(even){
+    background-color: #f6f3e9;
+}
+tbody tr:hover {
+    background-color: rgba(14, 185, 34, 0.1);
+    /* 你的主色半透明，类似"蓝色滤镜" */
+}
+
+/* option */
+main{
+    background-color: var(--animal-bg-content);
+    border-radius: var(--animal-radius-lg);
+    padding: 10px 12px;
+    overflow: auto;
+}
+
+/* popup */
+#importFile{
+    background-color: var(--animal-bg-content);
+    border-bottom: 10px;
+}
+input[type="file"]::file-selector-button {
+    border: none;
+    border-radius: var(--animal-radius);
+    box-shadow: 0 5px 0 0 var(--animal-shadow-btn);
+
+    cursor: pointer;
+    
+    transition: all 0.15s var(--animal-ease);
+
+    background-color: var(--animal-bg-content);
+    color: var(--animal-text-body);
+
+    font-weight: 500;
+}
+input[type="file"]::file-selector-button:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 0 0 var(--animal-shadow-btn);
+}
+input[type="file"]::file-selector-button:active{
+    transform: translateY(2px);
+    box-shadow:0 1px 0 0 var(--animal-shadow-btn);
+}
+input[type="file"] {
+    width: 70%;
+}
+
+.item:hover {
+    background-color: rgba(14, 185, 34, 0.1);
+}
+#suggestions{
+    border-radius: var(--animal-radius);
+}
+.item svg {
+    width: 1.5em;
+    height: 1.5em;
+    fill:var(--animal-text);
+}
